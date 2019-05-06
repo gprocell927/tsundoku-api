@@ -1,20 +1,26 @@
-import express from 'express';
-// Body parser parses incoming request bodies in a middleware before handlers. 
-// It parses the response data coming from the client in an object called req.body
-import bodyParser from 'body-parser';
-import router from './routes/index.js';
-
-// Set up the express app
+const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
+const db = require("./queries");
+const port = 3000;
 
-// Parse incoming requests data
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(router);  // makes use of router middleware
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
 
+app.get("/", (request, response) => {
+  response.json({ info: "Node.js, Express, and Postgres API" });
+});
 
-const PORT = 5000;
+app.get("/users", db.getUsers);
+app.get("/users/:id", db.getUserById);
+app.post("/users", db.createUser);
+app.put("/users/:id", db.updateUser);
+app.delete("/users/:id", db.deleteUser);
 
-app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`)
+app.listen(port, () => {
+  console.log(`App running on port ${port}.`);
 });
